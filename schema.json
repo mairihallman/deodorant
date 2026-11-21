@@ -17,7 +17,8 @@
       "properties": {
         "id": {
           "type": "string",
-          "pattern": "^[a-z]+-[0-9]{3,}$"
+          "pattern": "^[a-z]+-[0-9]{3,}$",
+          "description": "Unique across all files. Never change once published."
         },
         "type": {
           "enum": [
@@ -35,7 +36,8 @@
               "inference",
               "ml"
             ]
-          }
+          },
+          "description": "Topics the question belongs to. Can be more than one."
         },
         "tags": {
           "type": "array",
@@ -44,10 +46,12 @@
           }
         },
         "prompt": {
-          "type": "string"
+          "type": "string",
+          "description": "Question text. Blanks are {{1}}, {{2}}, etc. and can be inside math; when substituting a bank item inside math, strip its $ delimiters first. Optional for matching (defaults to \"Match the following\")."
         },
         "explanation": {
-          "type": "string"
+          "type": "string",
+          "description": "Shown after the user answers."
         },
         "options": {
           "type": "array",
@@ -65,14 +69,16 @@
                 "const": true
               }
             }
-          }
+          },
+          "description": "MCQ options. Shuffle when displaying. Exactly one must have correct: true."
         },
         "bank": {
           "type": "array",
           "minItems": 2,
           "items": {
             "type": "string"
-          }
+          },
+          "description": "Choices for fill_blank. Items are never used up: any item can fill any number of blanks. Shuffle when displaying."
         },
         "answers": {
           "type": "object",
@@ -93,13 +99,16 @@
                 }
               }
             ]
-          }
+          },
+          "description": "Maps blank number to the correct bank item. A list means any item in it counts as correct."
         },
         "unordered": {
-          "$ref": "#/definitions/blankGroups"
+          "$ref": "#/definitions/blankGroups",
+          "description": "Groups of blanks whose answers can be filled in any order."
         },
         "swappable_groups": {
-          "$ref": "#/definitions/blankGroups"
+          "$ref": "#/definitions/blankGroups",
+          "description": "Groups of blanks that can trade places as whole units, e.g. [[1, 2], [3, 4]]."
         },
         "pairs": {
           "type": "array",
@@ -111,7 +120,8 @@
             "items": {
               "type": "string"
             }
-          }
+          },
+          "description": "Matching pairs [left, right]. Show left in order, shuffle right."
         }
       },
       "allOf": [
@@ -245,10 +255,12 @@
           "type": "string"
         },
         "correct": {
-          "type": "boolean"
+          "type": "boolean",
+          "description": "Missing means false."
         },
         "why_wrong": {
-          "type": "string"
+          "type": "string",
+          "description": "Shown when the user picks this wrong option."
         }
       }
     },
