@@ -1,0 +1,268 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Question bank",
+  "type": "array",
+  "items": {
+    "$ref": "#/definitions/question"
+  },
+  "definitions": {
+    "question": {
+      "type": "object",
+      "required": [
+        "id",
+        "type",
+        "topics"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^[a-z]+-[0-9]{3,}$"
+        },
+        "type": {
+          "enum": [
+            "mcq",
+            "fill_blank",
+            "matching"
+          ]
+        },
+        "topics": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "enum": [
+              "probability",
+              "inference",
+              "ml"
+            ]
+          }
+        },
+        "tags": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "prompt": {
+          "type": "string"
+        },
+        "explanation": {
+          "type": "string"
+        },
+        "options": {
+          "type": "array",
+          "minItems": 2,
+          "items": {
+            "$ref": "#/definitions/option"
+          },
+          "contains": {
+            "type": "object",
+            "required": [
+              "correct"
+            ],
+            "properties": {
+              "correct": {
+                "const": true
+              }
+            }
+          }
+        },
+        "bank": {
+          "type": "array",
+          "minItems": 2,
+          "items": {
+            "type": "string"
+          }
+        },
+        "answers": {
+          "type": "object",
+          "minProperties": 1,
+          "propertyNames": {
+            "pattern": "^[0-9]+$"
+          },
+          "additionalProperties": {
+            "oneOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "array",
+                "minItems": 2,
+                "items": {
+                  "type": "string"
+                }
+              }
+            ]
+          }
+        },
+        "unordered": {
+          "$ref": "#/definitions/blankGroups"
+        },
+        "swappable_groups": {
+          "$ref": "#/definitions/blankGroups"
+        },
+        "pairs": {
+          "type": "array",
+          "minItems": 2,
+          "items": {
+            "type": "array",
+            "minItems": 2,
+            "maxItems": 2,
+            "items": {
+              "type": "string"
+            }
+          }
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "type": {
+                "const": "mcq"
+              }
+            }
+          },
+          "then": {
+            "required": [
+              "prompt",
+              "options"
+            ],
+            "not": {
+              "anyOf": [
+                {
+                  "required": [
+                    "bank"
+                  ]
+                },
+                {
+                  "required": [
+                    "answers"
+                  ]
+                },
+                {
+                  "required": [
+                    "unordered"
+                  ]
+                },
+                {
+                  "required": [
+                    "swappable_groups"
+                  ]
+                },
+                {
+                  "required": [
+                    "pairs"
+                  ]
+                }
+              ]
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "type": {
+                "const": "fill_blank"
+              }
+            }
+          },
+          "then": {
+            "required": [
+              "prompt",
+              "bank",
+              "answers"
+            ],
+            "not": {
+              "anyOf": [
+                {
+                  "required": [
+                    "options"
+                  ]
+                },
+                {
+                  "required": [
+                    "pairs"
+                  ]
+                }
+              ]
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "type": {
+                "const": "matching"
+              }
+            }
+          },
+          "then": {
+            "required": [
+              "pairs"
+            ],
+            "not": {
+              "anyOf": [
+                {
+                  "required": [
+                    "options"
+                  ]
+                },
+                {
+                  "required": [
+                    "bank"
+                  ]
+                },
+                {
+                  "required": [
+                    "answers"
+                  ]
+                },
+                {
+                  "required": [
+                    "unordered"
+                  ]
+                },
+                {
+                  "required": [
+                    "swappable_groups"
+                  ]
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    "option": {
+      "type": "object",
+      "required": [
+        "text"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "text": {
+          "type": "string"
+        },
+        "correct": {
+          "type": "boolean"
+        },
+        "why_wrong": {
+          "type": "string"
+        }
+      }
+    },
+    "blankGroups": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "array",
+        "minItems": 2,
+        "items": {
+          "type": "integer",
+          "minimum": 1
+        }
+      }
+    }
+  }
+}
